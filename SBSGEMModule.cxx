@@ -1624,8 +1624,8 @@ Int_t   SBSGEMModule::Decode( const THaEvData& evdata ){
     // Get common-mode flags, if applicable:
     // Default to the values from the database (or the default values):
 
-    Bool_t CM_ENABLED = fCommonModeFlag != 0 && fCommonModeFlag != 1 && !fPedestalMode;
-    Bool_t BUILD_ALL_SAMPLES = !fOnlineZeroSuppression;
+    Bool_t CM_ENABLED = fOnlineZeroSuppression && !fPedestalMode;
+    Bool_t BUILD_ALL_SAMPLES = !fOnlineZeroSuppression || fPedestalMode;
     Bool_t CM_OUT_OF_RANGE = false;
 
     //Initialize default values based on the run "DAQ info":
@@ -1680,9 +1680,11 @@ Int_t   SBSGEMModule::Decode( const THaEvData& evdata ){
     //cout<<BUILD_ALL_SAMPLES<<" "<<CM_ENABLED<<endl;
     //fOnlineZeroSuppression = !BUILD_ALL_SAMPLES;
     if( !BUILD_ALL_SAMPLES && !CM_ENABLED ) { //This should never happen: skip this APV card
+      apvcounter++;
       continue;
     }
     if( CM_OUT_OF_RANGE && !BUILD_ALL_SAMPLES ){ // this should also never happen: skip this APV card:
+      apvcounter++;
       continue;
     }
 
